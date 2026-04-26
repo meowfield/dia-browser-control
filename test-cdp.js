@@ -5,7 +5,8 @@
 
 async function testCDPConnection() {
   const cdpPort = 9222;
-  const cdpBaseUrl = `http://localhost:${cdpPort}`;
+  const cdpHost = '127.0.0.1';
+  const cdpBaseUrl = `http://${cdpHost}:${cdpPort}`;
 
   console.log('Testing Chrome DevTools Protocol connection...');
   console.log(`CDP URL: ${cdpBaseUrl}`);
@@ -45,6 +46,7 @@ async function testCDPConnection() {
     console.log('\n✅ All tests passed! Dia Browser is properly configured for CDP.');
     
   } catch (error) {
+    process.exitCode = 1;
     console.error('\n❌ CDP connection failed!');
 
     if (error.cause?.code === 'ECONNREFUSED' || error.message.includes('fetch failed')) {

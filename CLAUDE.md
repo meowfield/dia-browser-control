@@ -15,14 +15,14 @@ npm install
 # Run the MCP server
 npm start
 
-# Package the extension (rebuild .dxt file)
-npx @anthropic-ai/dxt pack
+# Validate the MCP Bundle manifest
+npm run validate
 
-# Validate manifest before packaging
-npx @anthropic-ai/dxt validate manifest.json
+# Package the extension (rebuild .mcpb file)
+npm run pack
 
-# Clean and optimize existing .dxt file
-npx @anthropic-ai/dxt clean dia-browser-control.dxt
+# Test Dia Chrome DevTools Protocol connectivity
+npm run test:cdp
 ```
 
 ## Architecture
@@ -72,10 +72,10 @@ All tools follow consistent patterns in server/index.js:
 
 ### Extension Packaging
 
-- **manifest.json**: DXT extension manifest with tool definitions
-- **dia-browser-control.dxt**: Built extension package (zip archive)
+- **manifest.json**: MCPB extension manifest with tool definitions
+- **dia-browser-control.mcpb**: Built extension package (zip archive)
 - Platform requirement: macOS (arm64)
-- Runtime requirement: Node.js >= 16.0.0
+- Runtime requirement: Node.js >= 18.0.0
 - Browser requirement: Dia Browser 0.38.0+ with remote debugging enabled
 
 ## GitHub Actions
@@ -87,7 +87,7 @@ The project includes Claude Code GitHub Actions:
 
 ## Development Notes
 
-- The `.dxt` file should not be committed to version control (added to .gitignore)
+- The `.mcpb` file should not be committed to version control (added to .gitignore)
 - CDP WebSocket connections have 10-second timeout for commands
 - Link preservation in `get_page_content` uses optimized array joining vs string concatenation
 - All tools return consistent JSON response format via MCP protocol
@@ -98,12 +98,12 @@ The project includes Claude Code GitHub Actions:
 When updating the extension:
 1. Update version in both `manifest.json` and `package.json`
 2. Follow semantic versioning: `major.minor.patch`
-3. Current version: 0.1.0
+3. Current version: 0.2.0
 
 ## Testing
 
 To test the extension:
 1. Launch Dia Browser with remote debugging: `/Applications/Dia.app/Contents/MacOS/Dia --remote-debugging-port=9222`
-2. Verify CDP is working: `curl http://localhost:9222/json`
+2. Verify CDP is working: `npm run test:cdp`
 3. Run the MCP server: `npm start`
 4. Test individual tools through Claude Desktop

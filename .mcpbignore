@@ -1,0 +1,14 @@
+.git/
+.github/
+.claude/
+.DS_Store
+
+CLAUDE.md
+AGENTS.md
+MIGRATION_SUMMARY.md
+test-cdp.js
+
+*.dxt
+*.mcpb
+*.log
+npm-debug.log*

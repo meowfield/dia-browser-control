@@ -1,21 +1,21 @@
 {
-  "dxt_version": "0.1",
+  "manifest_version": "0.3",
   "name": "dia-browser-control",
   "display_name": "Dia Browser Control",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Control Dia Browser tabs, windows, and navigation",
   "long_description": "This extension allows Claude to interact with Dia Browser, enabling tab management, navigation, page content reading, and browser automation. It uses Chrome DevTools Protocol to control the browser programmatically.\n\n**Setup Required:** Before using this extension, you need to enable remote debugging in Dia Browser:\n1. Close Dia Browser completely\n2. Launch with: `/Applications/Dia.app/Contents/MacOS/Dia --remote-debugging-port=9222`\n3. Or use the included script: `./launch-dia-debug.sh`\n\nThis extension is not affiliated with or endorsed by Dia Browser.",
   "author": {
-    "name": "danisgaazov",
-    "url": "https://github.com/danisgaazov/dia-browser-control"
+    "name": "meowfield",
+    "url": "https://github.com/meowfield/dia-browser-control"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/danisgaazov/dia-browser-control"
+    "url": "https://github.com/meowfield/dia-browser-control.git"
   },
-  "homepage": "https://github.com/danisgaazov/dia-browser-control",
-  "documentation": "https://github.com/danisgaazov/dia-browser-control",
-  "support": "https://github.com/danisgaazov/dia-browser-control/issues",
+  "homepage": "https://github.com/meowfield/dia-browser-control",
+  "documentation": "https://github.com/meowfield/dia-browser-control",
+  "support": "https://github.com/meowfield/dia-browser-control/issues",
   "icon": "icon.png",
   "tools": [
     {
@@ -82,10 +82,10 @@
   ],
   "license": "MIT",
   "compatibility": {
-    "claude_desktop": ">=0.10.0",
+    "claude_desktop": ">=1.0.0",
     "platforms": ["darwin"],
     "runtimes": {
-      "node": ">=16.0.0"
+      "node": ">=18.0.0"
     }
   }
 }

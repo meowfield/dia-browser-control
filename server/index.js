@@ -13,7 +13,7 @@ class DiaBrowserControlServer {
     this.server = new Server(
       {
         name: 'dia-browser-control',
-        version: '0.1.0',
+        version: '0.2.0',
       },
       {
         capabilities: {
@@ -22,9 +22,29 @@ class DiaBrowserControlServer {
       }
     );
 
+    this.cdpHost = '127.0.0.1';
     this.cdpPort = 9222;
-    this.cdpBaseUrl = `http://localhost:${this.cdpPort}`;
+    this.cdpBaseUrl = `http://${this.cdpHost}:${this.cdpPort}`;
+    this.nextCommandId = 1;
     this.setupHandlers();
+  }
+
+  isConnectionError(error) {
+    const code = error?.code || error?.cause?.code;
+    return ['ECONNREFUSED', 'ENOTFOUND', 'ECONNRESET'].includes(code)
+      || error?.message === 'fetch failed'
+      || error?.message?.includes('ECONNREFUSED');
+  }
+
+  createRemoteDebuggingError() {
+    return new Error(
+      'Dia Browser is not running with remote debugging enabled.\n\n' +
+      'To enable remote debugging:\n' +
+      '1. Close Dia Browser completely\n' +
+      '2. Launch Dia Browser with: /Applications/Dia.app/Contents/MacOS/Dia --remote-debugging-port=9222\n' +
+      '3. Or add --remote-debugging-port=9222 to your Dia Browser startup flags\n\n' +
+      'Note: Remote debugging must be enabled for this extension to work.'
+    );
   }
 
   async executeCDPCommand(method, params = {}, targetId = null) {
@@ -40,15 +60,8 @@ class DiaBrowserControlServer {
       console.error('CDP execution error:', error);
 
       // Check for Dia Browser not running or CDP not enabled
-      if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-        throw new Error(
-          'Dia Browser is not running with remote debugging enabled.\n\n' +
-          'To enable remote debugging:\n' +
-          '1. Close Dia Browser completely\n' +
-          '2. Launch Dia Browser with: /Applications/Dia.app/Contents/MacOS/Dia --remote-debugging-port=9222\n' +
-          '3. Or add --remote-debugging-port=9222 to your Dia Browser startup flags\n\n' +
-          'Note: Remote debugging must be enabled for this extension to work.'
-        );
+      if (this.isConnectionError(error)) {
+        throw this.createRemoteDebuggingError();
       }
 
       throw new Error(`CDP error: ${error.message}`);
@@ -63,9 +76,17 @@ class DiaBrowserControlServer {
       url.searchParams.append(key, params[key]);
     });
 
-    const response = await fetch(url.toString(), {
-      method: method
-    });
+    let response;
+    try {
+      response = await fetch(url.toString(), {
+        method: method
+      });
+    } catch (error) {
+      if (this.isConnectionError(error)) {
+        throw this.createRemoteDebuggingError();
+      }
+      throw error;
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -81,9 +102,9 @@ class DiaBrowserControlServer {
 
   async executeWebSocketCommand(method, params = {}, targetId) {
     return new Promise((resolve, reject) => {
-      const wsUrl = `ws://localhost:${this.cdpPort}/devtools/page/${targetId}`;
+      const wsUrl = `ws://${this.cdpHost}:${this.cdpPort}/devtools/page/${targetId}`;
       const ws = new WebSocket(wsUrl);
-      const commandId = Date.now();
+      const commandId = this.nextCommandId++;
 
       const timeout = setTimeout(() => {
         ws.close();
@@ -121,7 +142,11 @@ class DiaBrowserControlServer {
 
       ws.on('error', (error) => {
         clearTimeout(timeout);
-        reject(new Error(`WebSocket error: ${error.message}`));
+        if (this.isConnectionError(error)) {
+          reject(this.createRemoteDebuggingError());
+        } else {
+          reject(new Error(`WebSocket error: ${error.message}`));
+        }
       });
     });
   }
@@ -243,7 +268,7 @@ class DiaBrowserControlServer {
 
             if (new_tab) {
               // Create new tab - Dia Browser requires PUT method
-              const result = await this.executeHttpCommand(`/json/new?${url}`, {}, 'PUT');
+              await this.executeHttpCommand(`/json/new?${encodeURIComponent(url)}`, {}, 'PUT');
               return { content: [{ type: 'text', text: `Opened ${url} in new tab` }] };
             } else {
               // Navigate current tab

@@ -1,11 +1,14 @@
 {
-  "name": "ant.dir.ant.danisgaazov.dia-browser-control",
-  "version": "0.1.0",
+  "name": "dia-browser-control",
+  "version": "0.2.0",
   "description": "Control Dia Browser tabs, windows, and navigation",
   "main": "server/index.js",
   "type": "module",
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test:cdp": "node test-cdp.js",
+    "validate": "npx --yes @anthropic-ai/mcpb@2.1.2 validate .",
+    "pack": "npx --yes @anthropic-ai/mcpb@2.1.2 pack . dia-browser-control.mcpb"
   },
   "keywords": [
     "dia",
@@ -14,10 +17,13 @@
     "mcp",
     "chrome-devtools-protocol"
   ],
-  "author": "danisgaazov",
+  "author": "meowfield",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0",
-    "ws": "^8.18.0"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ws": "^8.20.0"
   }
 }

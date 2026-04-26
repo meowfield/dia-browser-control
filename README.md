@@ -42,11 +42,28 @@ Get the text content of a web page.
 
 - macOS (arm64)
 - Dia Browser installed (version 0.38.0 or later)
-- Node.js (version 16.0.0 or later)
+- Claude Desktop with custom desktop extensions enabled
+- Node.js 18.0.0 or later, only if you are building from source
 
 ## Installation
 
-To install this extension for Claude Desktop, download and open the `dia-browser-control.dxt` file.
+### Install a prebuilt bundle
+
+Download `dia-browser-control.mcpb` from GitHub Releases, then open it with Claude Desktop.
+
+In Claude Desktop you can also go to **Settings** -> **Extensions** -> **Advanced settings** -> **Install Extension...** and select the `.mcpb` file.
+
+### Build from source
+
+If a prebuilt release is not available yet:
+
+```bash
+git clone https://github.com/meowfield/dia-browser-control.git
+cd dia-browser-control
+npm install
+npm run pack
+open dia-browser-control.mcpb
+```
 
 ## Setup
 
@@ -84,10 +101,19 @@ After setting up remote debugging, you can test the connection:
 
 ```bash
 # Test CDP connectivity
-node test-cdp.js
+npm run test:cdp
 
 # Or manually check the endpoint
-curl http://localhost:9222/json
+curl http://127.0.0.1:9222/json
+```
+
+### Packaging Checks
+
+Maintainers can validate and rebuild the MCP Bundle with:
+
+```bash
+npm run validate
+npm run pack
 ```
 
 ## Security
@@ -126,7 +152,7 @@ Use with appropriate caution and only grant access when necessary.
 
 You can verify that remote debugging is working by visiting:
 ```
-http://localhost:9222/json
+http://127.0.0.1:9222/json
 ```
 
 This should show a JSON list of all open tabs.

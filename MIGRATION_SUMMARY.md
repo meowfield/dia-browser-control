@@ -72,7 +72,7 @@ Successfully migrated the MCP extension from Brave Browser (AppleScript) to Dia 
 
 - **Platform**: macOS (arm64)
 - **Browser**: Dia Browser 0.38.0+
-- **Node.js**: 16.0.0+
+- **Node.js**: 18.0.0+
 - **Protocol**: Chrome DevTools Protocol (latest)
 
 ## Benefits of Migration
